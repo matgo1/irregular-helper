@@ -1,7 +1,9 @@
 use axum::{Router, routing::get};
 
 fn create_router() -> Router {
-    Router::new().route("/", get(|| async { "Hello world!" }))
+    Router::new()
+        .route("/verbs/{base}", get(handlers::get_verbs))
+        .with_state(crate::logic::IrregularVerbs::new())
 }
 
 pub async fn start_polling() {
@@ -11,4 +13,24 @@ pub async fn start_polling() {
         .unwrap();
 
     axum::serve(listener, app).await.unwrap();
+}
+
+mod handlers {
+    use axum::{
+        Json,
+        extract::{Path, State},
+        http::StatusCode,
+    };
+
+    use crate::logic::{Forms, IrregularVerbs};
+
+    pub async fn get_verbs(
+        State(st): State<IrregularVerbs>,
+        Path(base): Path<String>,
+    ) -> Result<Json<Forms>, StatusCode> {
+        st.get(&base)
+            .cloned()
+            .map(Json)
+            .ok_or(StatusCode::NOT_FOUND)
+    }
 }

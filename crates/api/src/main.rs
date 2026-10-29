@@ -1,5 +1,4 @@
 mod api;
-mod logic;
 
 #[tokio::main]
 async fn main() {

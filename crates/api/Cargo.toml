@@ -2,7 +2,9 @@
 name = "api"
 version.workspace = true
 edition.workspace = true
+license.workspace = true
 
 [dependencies]
 axum = "0.8.9"
 tokio.workspace = true
+verbs.workspace = true

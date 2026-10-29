@@ -3,7 +3,7 @@ use axum::{Router, routing::get};
 fn create_router() -> Router {
     Router::new()
         .route("/verbs/{base}", get(handlers::get_verbs))
-        .with_state(crate::logic::IrregularVerbs::new())
+        .with_state(verbs::IrregularVerbs::new())
 }
 
 pub async fn start_polling() {
@@ -22,7 +22,7 @@ mod handlers {
         http::StatusCode,
     };
 
-    use crate::logic::{Forms, IrregularVerbs};
+    use verbs::{Forms, IrregularVerbs};
 
     pub async fn get_verbs(
         State(st): State<IrregularVerbs>,

@@ -1,8 +1,8 @@
 use std::collections::HashMap;
 
+const WORDS: &str = include_str!("../words.txt");
 const LINES_COUNT: usize = 176;
 const WORDS_IN_LINE: usize = 3;
-const FILE_NAME: &str = "words.txt";
 
 pub type Forms = [String; WORDS_IN_LINE];
 
@@ -14,12 +14,10 @@ pub struct IrregularVerbs {
 impl IrregularVerbs {
     /// Create a hashmap from txt file
     pub fn new() -> Self {
-        // Read the file
-        let text = std::fs::read_to_string(FILE_NAME).expect("Should have read the file");
         // Allocate space for hashmap
         let mut verbs = HashMap::with_capacity(LINES_COUNT);
 
-        for line in text.lines().filter(|l| !l.trim().is_empty()) {
+        for line in WORDS.lines().filter(|l| !l.trim().is_empty()) {
             // Iterator of words in line
             let mut words = line.split_whitespace().map(String::from);
 
@@ -36,5 +34,11 @@ impl IrregularVerbs {
 
     pub fn get(&self, base: &str) -> Option<&Forms> {
         self.verbs.get(base)
+    }
+}
+
+impl Default for IrregularVerbs {
+    fn default() -> Self {
+        Self::new()
     }
 }

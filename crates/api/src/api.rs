@@ -2,17 +2,28 @@ use axum::{Router, routing::get};
 
 fn create_router() -> Router {
     Router::new()
+        .route("/health", get(|| async { "ok" }))
         .route("/verbs/{base}", get(handlers::get_verbs))
         .with_state(verbs::IrregularVerbs::new())
 }
 
-pub async fn start_polling() {
-    let app: Router = create_router();
-    let listener = tokio::net::TcpListener::bind("127.0.0.1:5080")
-        .await
-        .unwrap();
+async fn shutdown_signal() {
+    use tokio::signal::unix::{SignalKind, signal};
+    let mut term = signal(SignalKind::terminate()).expect("can't listen from SIGTERM");
+    tokio::select! {
+        _ = tokio::signal::ctrl_c() => {},
+        _ = term.recv() => {},
+    }
+    tracing::info!("Shutting down");
+}
 
-    axum::serve(listener, app).await.unwrap();
+pub async fn serve() -> std::io::Result<()> {
+    let addr = std::env::var("API_ADDR").unwrap_or_else(|_| "127.0.0.1:5080".to_string());
+    let listener = tokio::net::TcpListener::bind(&addr).await?;
+    tracing::info!("API listening on {addr}");
+    axum::serve(listener, create_router())
+        .with_graceful_shutdown(shutdown_signal())
+        .await
 }
 
 mod handlers {

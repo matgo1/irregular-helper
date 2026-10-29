@@ -42,3 +42,23 @@ impl Default for IrregularVerbs {
         Self::new()
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn finds_forms_of_go() {
+        let verbs = IrregularVerbs::new();
+        assert_eq!(
+            verbs.get("go").unwrap(),
+            &["go", "went", "gone"].map(String::from)
+        )
+    }
+
+    #[test]
+    fn regular_verb_returns_none() {
+        let verbs = IrregularVerbs::new();
+        assert!(verbs.get("walk").is_none())
+    }
+}

@@ -6,7 +6,12 @@ license.workspace = true
 
 [dependencies]
 tokio.workspace = true
-teloxide = { version = "0.17.0", features = ["macros"] }
-log = "0.4"
-pretty_env_logger = "0.5"
+verbs.workspace = true
+tracing.workspace = true
+tracing-subscriber.workspace = true
+teloxide = { version = "0.17.0", default-features = false, features = [
+  "macros",
+  "rustls",
+  "ctrlc_handler",
+] }
 dotenvy = "0.15.7"

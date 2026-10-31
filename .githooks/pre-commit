@@ -1,5 +1,0 @@
-#!/bin/sh
-# Runs before every commit
-set -e
-cargo fmt --check
-cargo clippy --all-targets --quiet -- -D warnings

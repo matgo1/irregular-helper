@@ -1,0 +1,32 @@
+# Production setup on atlas (my server).
+services:
+  api:
+    image: ghcr.io/matgo1/irregular-helper-api:${TAG:?TAG is not set}
+    container_name: irregular-api
+    restart: unless-stoped
+    ports:
+      - "127.0.0.1:5080:5080" # Only Caddy on the same machine can reach it
+    environment:
+      RUST_LOG: info
+      LOG_FORMAT: json
+    mem_limit: 64m
+    read_only: true
+    security_opt: ["no-new-privileges:true"]
+    logging: &logging
+      driver: json-file
+      options: { max-size: "10m", max-file: "3" }
+
+  bot:
+    image: ghcr.io/matgo1/irregular-helper-bot:${TAG:?TAG is not set}
+    container_name: irregular-bot
+    restart: unless-stoped
+    network_mode: container:vpn # VPN room -> Telegram
+    env_file: bot.env
+    environment:
+        RUST_LOG: info
+        LOG_FORMAT: json
+    stop_signal: SIGNINT # CTRL+C
+    mem_limit: 64m
+    read_only: true
+    security_opt: ["no-new-privileges:true"]
+    logging: *logging

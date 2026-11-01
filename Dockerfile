@@ -16,13 +16,15 @@ RUN cargo chef cook --release --recipe-path recipe.json
 COPY . .
 RUN cargo build --release --locked --bin api --bin bot
 
-# 4. Final images
+# 4. Final images...
+# of api
 FROM gcr.io/distroless/cc-debian13:nonroot AS api
 COPY --from=builder /src/target/release/api /usr/local/bin/api
 ENV API_ADDR=0.0.0.0:5080
 EXPOSE 5080
 ENTRYPOINT [ "/usr/local/bin/api" ]
 
+# of bot
 FROM gcr.io/distroless/cc-debian13:nonroot AS bot
 COPY --from=builder /src/target/release/bot /usr/local/bin/bot
 ENTRYPOINT ["/usr/local/bin/bot"]

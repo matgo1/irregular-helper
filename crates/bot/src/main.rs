@@ -1,6 +1,6 @@
-use std::sync::Arc;
-
 use teloxide::prelude::*;
+
+mod ir_verbs;
 
 fn init_logging() {
     use tracing_subscriber::EnvFilter;
@@ -24,20 +24,13 @@ async fn main() {
     tracing::info!("Starting bot...");
 
     let bot = Bot::from_env(); // Reads TELOXIDE TOKEN
-    let verbs = Arc::new(verbs::IrregularVerbs::new());
 
-    // HACK: Move into separated function later
-    teloxide::repl(bot, move |bot: Bot, msg: Message| {
-        let verbs = Arc::clone(&verbs);
-        async move {
-            let word = msg.text().unwrap_or_default().trim().to_lowercase();
-            let reply = match verbs.get(&word) {
-                Some([base, past, participle]) => format!("{base} -> {past} -> {participle}"),
-                None => "Regular verb or I don't have it in my list".to_string(),
-            };
-            bot.send_message(msg.chat.id, reply).await?;
-            Ok(())
-        }
-    })
-    .await
+    // Handler
+    let handler = Update::filter_message().endpoint(ir_verbs::get_forms);
+
+    Dispatcher::builder(bot, handler)
+        .enable_ctrlc_handler()
+        .build()
+        .dispatch()
+        .await;
 }

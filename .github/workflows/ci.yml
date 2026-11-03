@@ -16,7 +16,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - run: rustup toolchain install
-      - uses: Swatinem/rust-cahce@v2
+      - uses: Swatinem/rust-cache@v2
       - run: cargo fmt --check
       - run: cargo clippy --all-targets --locked -- -D warnings
       - run: cargo test --locked
@@ -42,5 +42,5 @@ jobs:
           context: .
           target: ${{ matrix.target }}
           push: false
-          cache-from: type=gha, scope=${{ matrix.target }}
-          cache-to: type=gha, mode=max, scope=${{ matrix.target }}
+          cache-from: type=gha,scope=${{ matrix.target }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.target }}

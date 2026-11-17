@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 
 # 1. Rust toolbox with cargo-chef, which caches dependencies between builds
-FROM lukemathwalker/cargo-chef:latest-rust-1.99.1 AS chef
+FROM lukemathwalker/cargo-chef:latest-rust-1.100.0 AS chef
 WORKDIR /src
 
 # 2. Make a "shopping list" of the dependencies
